@@ -15,12 +15,11 @@ export default function Home() {
   const [Error, setError] = useState(null);
   const [Loading, setLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
-
+  // require('dotenv').config();
   const MODEL_NAME = "gemini-1.0-pro";
 
-  const genAi = new GoogleGenerativeAI(
-    process.env.API_KEY || "AIzaSyBvmJJWXu0g27EVKTBrumiv7iBgHFXUR4c"
-  );
+  const genAi = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_API_KEY);
+
 
   const generationCOnfig = {
     temperature: 0.9,
@@ -101,7 +100,7 @@ export default function Home() {
           // result = await chat.sendMessage(userInput);
         // }
 
-        console.log(result);
+        // console.log(result);
         const botMessage = {
           text: result.response.text(),
           role: "bot",
@@ -189,7 +188,7 @@ export default function Home() {
           <br />
         </div>
       </div>
-      {console.log("Imgs are = ", message)}
+      {/* {console.log("Imgs are = ", message)} */}
       {message.map((msg, index) => (
         <div
           key={index}
@@ -202,7 +201,7 @@ export default function Home() {
               <img
                 style={{
                   maxWidth: "100%",
-                  maxHeight: "100px",
+                  maxHeight: "150px",
                   marginBottom: "10px",
                   float:"right"
                 }}
@@ -277,7 +276,8 @@ export default function Home() {
                 ? handleSendMessage()
                 : Swal.fire("Input Field Can not be Empty.");
               // selectedImage !== null && handleSendImage(selectedImage)
-              console.log(selectedImage);
+              // console.log(selectedImage);
+              selectedImage !== null && Swal.fire("Please note that the Gemini Free API does not provide a response based on images.");
             }}
             className="p-2 bg-blue-500 text-white rounded-md ml-2 hover:bg-blue-600 focus:outline-none"
           >
