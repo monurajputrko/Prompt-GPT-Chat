@@ -1,6 +1,3 @@
-
-
-
 "use client";
 
 import {
@@ -9,7 +6,7 @@ import {
   HarmBlockThreshold,
 } from "@google/generative-ai";
 import { useEffect, useState } from "react";
-import Swal from 'sweetalert2'
+import Swal from "sweetalert2";
 export default function Home() {
   const [message, setMessage] = useState([]);
   const [userInput, setUserInput] = useState("");
@@ -17,11 +14,13 @@ export default function Home() {
   const [theme, setTheme] = useState("light");
   const [Error, setError] = useState(null);
   const [Loading, setLoading] = useState(false);
-
+  const [selectedImage, setSelectedImage] = useState(null);
 
   const MODEL_NAME = "gemini-1.0-pro";
 
-  const genAi = new GoogleGenerativeAI(process.env.API_KEY || 'AIzaSyBvmJJWXu0g27EVKTBrumiv7iBgHFXUR4c');
+  const genAi = new GoogleGenerativeAI(
+    process.env.API_KEY || "AIzaSyBvmJJWXu0g27EVKTBrumiv7iBgHFXUR4c"
+  );
 
   const generationCOnfig = {
     temperature: 0.9,
@@ -74,29 +73,45 @@ export default function Home() {
   const handleSendMessage = async () => {
     setLoading(true);
     try {
-      const userMessage = {
-        text: userInput,
-        role: "user",
-        timestamp: new Date(),
-      };
+      if (selectedImage !== null) {
+        const userMessage = {
+          images: selectedImage,
+          role: "user",
+          timestamp: new Date(),
+        };
 
-      setMessage((prevMessages) => [...prevMessages, userMessage]);
-      setUserInput("");
+        setMessage((prevMessages) => [...prevMessages, userMessage]);
+        setSelectedImage(null);
+      } else {
+        const userMessage = {
+          text: userInput,
+          role: "user",
+          timestamp: new Date(),
+        };
+        setMessage((prevMessages) => [...prevMessages, userMessage]);
+        setUserInput("");
+      }
 
       if (chat) {
-        const result = await chat.sendMessage(userInput);
+        var result = await chat.sendMessage(userInput);
+        // if (selectedImage !== null) {
+        //   result = await chat.sendMessage(selectedImage);
+        //   setSelectedImage(null);
+        // } else {
+          // result = await chat.sendMessage(userInput);
+        // }
 
+        console.log(result);
         const botMessage = {
           text: result.response.text(),
           role: "bot",
           timestamp: new Date(),
         };
-
-        setLoading(false) 
+        setLoading(false);
         setMessage((prevMessages) => [...prevMessages, botMessage]);
       }
     } catch (error) {
-      setLoading(false); 
+      setLoading(false);
       console.error(error);
       setError("Failed to send message. Please try again");
     }
@@ -141,6 +156,17 @@ export default function Home() {
     }
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setSelectedImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const { primary, secondry, accent, text } = getThemeColor();
 
   return (
@@ -163,20 +189,39 @@ export default function Home() {
           <br />
         </div>
       </div>
+      {console.log("Imgs are = ", message)}
       {message.map((msg, index) => (
         <div
           key={index}
           className={`mb-4 ${msg.role === "user" ? "text-right" : "text-left"}`}
         >
-          <span
-            className={`p-2 rounded-lg ${
-              msg.role === "user"
-                ? `${accent} text-white`
-                : `${primary} ${text}`
-            }`}
-          >
-            {msg.text}
-          </span>
+          {msg.role === "user" && msg.images ? (
+            <span
+            >
+              {" "}
+              <img
+                style={{
+                  maxWidth: "100%",
+                  maxHeight: "100px",
+                  marginBottom: "10px",
+                  float:"right"
+                }}
+                src={msg.images}
+                alt="Img"
+              />{" "}
+            </span>
+          ) : (
+            <span
+              className={`p-2 rounded-lg ${
+                msg.role === "user"
+                  ? `${accent} text-white`
+                  : `${primary} ${text}`
+              }`}
+            >
+              {msg.text}
+            </span>
+          )}
+
           {msg.role === "bot" && (
             <p className={`text-xs ${text} mt-1`}>
               Prompt GPT {msg.timestamp.toLocaleString()}
@@ -201,19 +246,43 @@ export default function Home() {
             type="text"
             placeholder="Message Prompt GPT"
             value={userInput}
-            onChange={(e) => setUserInput(e.target.value)}
+            onChange={(e) =>{
+              setUserInput(e.target.value);
+              setSelectedImage(null);
+            }}
             onKeyDown={handleKeyPress}
             className="flex-1 p-2 rounded-md border-b border-1 focus:outline-none focus:border-blue-500"
           />
+          {/* <input
+  type="file"
+  accept="image/*"
+  
+/> */}
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            id="fileInput"
+            onChange={handleImageChange}
+          />
+          <label
+            htmlFor="fileInput"
+            className="p-2 bg-blue-500 text-white rounded-md ml-2 hover:bg-blue-600 cursor-pointer"
+          >
+            Select Image
+          </label>
           <button
-  onClick={() => {
-    userInput.length !== 0 ? handleSendMessage() : Swal.fire("Input Field Can not be Empty.");
-  }}
-  className="p-2 bg-blue-500 text-white rounded-md ml-2 hover:bg-blue-600 focus:outline-none"
->
-  Send
-</button>
-
+            onClick={() => {
+              userInput.length !== 0 || selectedImage !== null
+                ? handleSendMessage()
+                : Swal.fire("Input Field Can not be Empty.");
+              // selectedImage !== null && handleSendImage(selectedImage)
+              console.log(selectedImage);
+            }}
+            className="p-2 bg-blue-500 text-white rounded-md ml-2 hover:bg-blue-600 focus:outline-none"
+          >
+            Send
+          </button>
         </div>
       </div>
     </div>
