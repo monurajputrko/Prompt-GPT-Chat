@@ -9,7 +9,7 @@ import {
   HarmBlockThreshold,
 } from "@google/generative-ai";
 import { useEffect, useState } from "react";
-
+import Swal from 'sweetalert2'
 export default function Home() {
   const [message, setMessage] = useState([]);
   const [userInput, setUserInput] = useState("");
@@ -21,7 +21,7 @@ export default function Home() {
 
   const MODEL_NAME = "gemini-1.0-pro";
 
-  const genAi = new GoogleGenerativeAI(process.env.API_KEY);
+  const genAi = new GoogleGenerativeAI(process.env.API_KEY || 'AIzaSyBvmJJWXu0g27EVKTBrumiv7iBgHFXUR4c');
 
   const generationCOnfig = {
     temperature: 0.9,
@@ -163,26 +163,6 @@ export default function Home() {
           <br />
         </div>
       </div>
-      {/* {message.map((msg, index) => (
-        <div
-          key={index}
-          className={`mb-4 ${msg.role === "user" ? "text-right" : "text-left"}`}
-        >
-          <span
-            className={`p-2 rounded-lg ${
-              msg.role === "user"
-                ? `${accent} text-white`
-                : `${primary} ${text}`
-            }`}
-          >
-            {msg.text}
-          </span>
-          <p className={`text-xs ${text} mt-1`}>
-                {msg.role === "bot" ? "Prompt GPT" : "You"}
-                {msg.timestamp.toLocaleString()}
-              </p>
-        </div>
-      ))} */}
       {message.map((msg, index) => (
         <div
           key={index}
@@ -217,7 +197,6 @@ export default function Home() {
       <div className="flex flex-col h-screen ">
         <div className="mt-auto flex border-2 border-black rounded-tl-lg rounded-br-lg">
           {" "}
-          {/* Use mt-auto to push the div to the bottom */}
           <input
             type="text"
             placeholder="Message Prompt GPT"
@@ -227,11 +206,14 @@ export default function Home() {
             className="flex-1 p-2 rounded-md border-b border-1 focus:outline-none focus:border-blue-500"
           />
           <button
-            onClick={handleSendMessage}
-            className="p-2 bg-blue-500 text-white rounded-md ml-2 hover:bg-blue-600 focus:outline-none"
-          >
-            Send
-          </button>
+  onClick={() => {
+    userInput.length !== 0 ? handleSendMessage() : Swal.fire("Input Field Can not be Empty.");
+  }}
+  className="p-2 bg-blue-500 text-white rounded-md ml-2 hover:bg-blue-600 focus:outline-none"
+>
+  Send
+</button>
+
         </div>
       </div>
     </div>
