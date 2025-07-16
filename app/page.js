@@ -16,7 +16,7 @@ export default function Home() {
   const [Loading, setLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   // require('dotenv').config();
-  const MODEL_NAME = "gemini-1.0-pro";
+   const MODEL_NAME = "gemini-2.5-pro"; 
 
   // const genAi = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_API_KEY);
   const genAi = new GoogleGenerativeAI('AIzaSyCcDplqD2zG25o4JCOSi1sPYjKTNLOmZn8');
