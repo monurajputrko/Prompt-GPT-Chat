@@ -18,7 +18,8 @@ export default function Home() {
   // require('dotenv').config();
   const MODEL_NAME = "gemini-1.0-pro";
 
-  const genAi = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_API_KEY);
+  // const genAi = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_API_KEY);
+  const genAi = new GoogleGenerativeAI('AIzaSyCcDplqD2zG25o4JCOSi1sPYjKTNLOmZn8');
 
 
   const generationCOnfig = {
